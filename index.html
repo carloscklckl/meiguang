@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="美光" />
+  <meta name="theme-color" content="#1a1012" />
+  <meta name="description" content="美光 — 一邊用螢幕補光，一邊影相同拍片" />
+  <title>美光</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="light" aria-hidden="true"></div>
+
+    <section id="gate" class="screen">
+      <img class="mark" src="icon-180.png" alt="" />
+      <h1>美光</h1>
+      <p>用螢幕補光，同時影相、拍片。<br />前置自拍、後置取景都可以打光。</p>
+      <button class="cta" id="start-btn">開啟相機</button>
+      <p class="hint">會用到相機同麥克風。建議將系統亮度開到最高。</p>
+    </section>
+
+    <section id="camera" class="screen hidden">
+      <div id="stage">
+        <div id="viewfinder">
+          <video id="video" autoplay playsinline muted></video>
+          <canvas id="fx" class="hidden"></canvas>
+          <div id="grid"></div>
+          <div id="focus"></div>
+          <div id="countdown"></div>
+          <div id="rec-badge"><span class="dot"></span><span id="rec-time">00:00</span></div>
+          <div id="filters" class="hidden"></div>
+        </div>
+      </div>
+
+      <header id="topbar">
+        <div class="cluster" id="left-tools">
+          <button class="icon-btn" id="btn-flash" title="閃光燈" aria-label="閃光燈"></button>
+          <button class="icon-btn" id="btn-timer" title="倒數" aria-label="倒數"></button>
+          <button class="icon-btn" id="btn-aspect" title="比例" aria-label="比例"></button>
+          <button class="icon-btn" id="btn-grid" title="網格" aria-label="網格"></button>
+          <button class="icon-btn" id="btn-light" title="補光" aria-label="補光"></button>
+        </div>
+        <div class="cluster">
+          <button class="icon-btn" id="btn-filter" title="濾鏡" aria-label="濾鏡"></button>
+          <button class="icon-btn" id="btn-settings" title="設定" aria-label="設定"></button>
+        </div>
+      </header>
+
+      <div id="zoom-rail" class="hidden"></div>
+
+      <footer id="bottom">
+        <div id="light-tray">
+          <div class="row-top">
+            <h2>補光</h2>
+            <button class="toggle-mini" id="btn-light-off">關閉補光</button>
+          </div>
+          <div id="presets"></div>
+          <label class="slider-row">
+            <span>色溫</span>
+            <input type="range" id="kelvin" min="2700" max="7500" step="50" value="5200" />
+            <span id="kelvin-val">5200K</span>
+          </label>
+          <label class="slider-row">
+            <span>亮度</span>
+            <input type="range" id="brightness" min="0" max="100" step="1" value="80" />
+            <span id="brightness-val">80%</span>
+          </label>
+          <label class="slider-row">
+            <span>範圍</span>
+            <input type="range" id="frame" min="8" max="40" step="1" value="20" />
+            <span id="frame-val">20%</span>
+          </label>
+        </div>
+
+        <div id="modes">
+          <button data-mode="photo" class="on">拍照</button>
+          <button data-mode="video">錄影</button>
+        </div>
+
+        <div id="main-controls">
+          <button id="thumb" class="empty" aria-label="相簿"></button>
+          <button id="shutter" aria-label="快門"><span class="inner"></span></button>
+          <div id="right-actions">
+            <button id="cam-pick" class="hidden" title="選擇鏡頭" aria-label="選擇鏡頭"></button>
+            <button id="flip" title="轉換鏡頭" aria-label="轉換鏡頭"></button>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <div id="cam-menu" class="hidden"></div>
+
+    <section id="review" class="screen hidden">
+      <div class="stage" id="review-stage"></div>
+      <div class="bar">
+        <button id="review-close">返回</button>
+        <button id="review-share">分享</button>
+        <button id="review-save">下載</button>
+        <button id="review-delete" class="danger">刪除</button>
+      </div>
+    </section>
+
+    <div id="sheet-bg" class="hidden"></div>
+    <aside id="sheet" class="hidden">
+      <div class="grab"></div>
+      <h3>設定</h3>
+      <div class="setting">
+        <div><strong>美顏</strong><p>影相同預覽都加一點柔光。</p></div>
+        <button class="switch" id="sw-beauty" aria-label="美顏"><i></i></button>
+      </div>
+      <div class="setting">
+        <div><strong>自拍鏡像</strong><p>儲存自拍時，同預覽一樣左右相反。</p></div>
+        <button class="switch on" id="sw-mirror" aria-label="自拍鏡像"><i></i></button>
+      </div>
+      <div class="setting">
+        <div><strong>自拍螢幕閃光</strong><p>按下快門時，螢幕會短暫再光一點。</p></div>
+        <button class="switch on" id="sw-screenflash" aria-label="自拍螢幕閃光"><i></i></button>
+      </div>
+      <div class="setting">
+        <div><strong>錄影收音</strong><p>拍片時開麥克風。</p></div>
+        <button class="switch on" id="sw-mic" aria-label="錄影收音"><i></i></button>
+      </div>
+      <p class="note">呢個係網頁 app，可以直接加到主畫面：Safari 撳分享再揀「加入主畫面」，Android 用 Chrome 選單入面嘅「安裝應用程式」。<br />瀏覽器做唔到人像虛化、夜景同專業 RAW，其他日常影相、拍片、閃光、變焦、倒數同補光都可以用。請將系統亮度開到最高，補光先最夠力。</p>
+    </aside>
+
+    <div id="toast"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
